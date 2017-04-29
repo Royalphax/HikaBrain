@@ -1,17 +1,24 @@
 package fr.roytreo.hikabrain.core;
 
+import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.roytreo.hikabrain.core.event.EventListener;
 import fr.roytreo.hikabrain.core.handler.MinecraftVersion;
 import fr.roytreo.hikabrain.core.manager.VersionManager;
 import fr.roytreo.hikabrain.core.util.Utils;
+import net.md_5.bungee.api.ChatColor;
 
 public class HikaBrainPlugin extends JavaPlugin {
 
 	private static HikaBrainPlugin instance;
 	public static final String PACKAGE = "fr.roytreo.hikabrain";
+	public static final String PREFIX = ChatColor.GRAY + "[" + ChatColor.GOLD + "HikaBrain" + ChatColor.GRAY + "] " + ChatColor.RESET;
 
 	public VersionManager versionManager;
 
@@ -46,6 +53,24 @@ public class HikaBrainPlugin extends JavaPlugin {
 	public static HikaBrainPlugin getInstance() {
 		return instance;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void register(final Class<? extends EventListener>... classes) {
+        try {
+            for (final Class<? extends EventListener> clazz : classes) {
+                final Constructor<? extends EventListener> constructor = clazz.getConstructor(HikaBrainPlugin.class);
+                Bukkit.getPluginManager().registerEvents((Listener)constructor.newInstance(this), (Plugin)this);
+            }
+        }
+        catch (Throwable ex) {
+        	Utils.registerException(ex, true);
+            try {
+				throw ex;
+			} catch (Throwable e) {
+				Utils.registerException(e, true);
+			}
+        }
+    }
 
 	public static Boolean isSpigotServer() {
 		try {

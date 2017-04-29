@@ -5,6 +5,6 @@ description: An addictive mini-game which combine strategy and fighting in few s
 authors: [Roytreo28]
 commands:
   hikabrain:
-    usage: /hb create|delete|list|join|leave
+    usage: /hb create|delete|save|list|join|leave
     aliases: [hb, mlgrush]
     description: Main command
