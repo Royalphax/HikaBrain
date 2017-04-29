@@ -16,13 +16,24 @@ public class HikaBrainCommand implements CommandExecutor {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!(sender instanceof Player) && sender.isOp()) {
+		if (!(sender instanceof Player)) {
 			sender.sendMessage("Please connect on the server, then use this command again.");
 			return true;
 		}
 		Player player = (Player) sender;
 		if (args.length > 0) {
-			if (args[0].equalsIgnoreCase("create")) {
+			if (player.isOp() || player.hasPermission("hikabrain.admin")) {
+				if (args[0].equalsIgnoreCase("create")) {
+					return true;
+				} else if (args[0].equalsIgnoreCase("delete")) {
+					return true;
+				} else if (args[0].equalsIgnoreCase("save")) {
+					return true;
+				} 
+			}
+			if (args[0].equalsIgnoreCase("list")) {
+				return true;
+			} else if (args[0].equalsIgnoreCase("join")) {
 				return true;
 			} else if (args[0].equalsIgnoreCase("leave")) {
 				return true;
