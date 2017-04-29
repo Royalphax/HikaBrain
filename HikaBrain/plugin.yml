@@ -1,0 +1,10 @@
+name: HikaBrain
+main: fr.roytreo.hikabrain.core.HikaBrainPlugin
+version: 0.0.1
+description: An addictive mini-game which combine strategy and fighting in few seconds only ! 
+authors: [Roytreo28]
+commands:
+  hikabrain:
+    usage: /hb create|delete|list|join|leave
+    aliases: [hb, mlgrush]
+    description: Main command
