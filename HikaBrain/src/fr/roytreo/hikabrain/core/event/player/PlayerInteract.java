@@ -1,8 +1,12 @@
 package fr.roytreo.hikabrain.core.event.player;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 
 import fr.roytreo.hikabrain.core.HikaBrainPlugin;
 import fr.roytreo.hikabrain.core.event.EventListener;
@@ -51,10 +55,27 @@ public class PlayerInteract extends EventListener {
 					Messages.LEAVE_GAME.sendMessage(player, player);
 				}
 			}
-		} else {
-			if (!event.hasItem()) {
-				
-			}
 		}
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        {
+        	if ((event.getClickedBlock().getType() == Material.SIGN || event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.WALL_SIGN))
+        	{
+            	Sign sign = (Sign) event.getClickedBlock().getState();
+        		if (sign.getLine(0).equals(Messages.SIGN_HEADER.getMessage()))
+        		{
+        			ArenaManager arena = ArenaManager.getArena(ChatColor.stripColor(sign.getLine(1)));
+        			if (arena != null)
+        			{
+        				if (!ArenaManager.isPlayerInArena(player)) {
+        					player.chat("/hb join " + ChatColor.stripColor(sign.getLine(1)));
+        				} else {
+        					Messages.ALREADY_IN_GAME.sendMessage(player, player);
+        				}
+        			} else {
+        				Messages.SIGN_NOT_LINK_TO_ARENA.sendMessage(player, player);
+        			}
+        		}
+        	}
+        }
 	}
 }

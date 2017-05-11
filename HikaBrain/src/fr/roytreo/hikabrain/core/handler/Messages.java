@@ -24,6 +24,17 @@ public enum Messages {
 	TEAM_BLUE_JOIN("&7You join the &9Blue team&7."),
 	TEAM_ALREADY_IN_IT("&cYou are already in this team."),
 	TEAM_FULL("&cThis team is full."),
+	ALREADY_IN_GAME("&cYou are already in game."),
+	SIGN_NOT_LINK_TO_ARENA("This sign isn't linked to any HikaBrain arena."),
+	SIGN_HEADER("&6HikaBrain"),
+	SIGN_LINE_2("&b%ARENA_NAME%"),
+	SIGN_LINE_3_PLAYERS("&a%PLAYERS_IN_ARENA%/%MAX_PLAYERS_IN_ARENA%"),
+	SIGN_LINE_3_SCORE("&c&l%RED_SCORE% &8&l- &9&l%BLUE_SCORE%"),
+	SIGN_LINE_4("%ARENA_GAME_STATE%"),
+	WAITING("&2➲ &a&lWaiting ..."),
+	STARTING("&6• &e&lStarting ..."),
+	INGAME("&4✖ &c&lIngame"),
+	ENDING("&5☠ &d&lEnding ..."),
 	LEAVE_GAME("&cYou left the game !");
 	
 	private static HashMap<Messages, String> messages = new HashMap<>();
@@ -37,16 +48,17 @@ public enum Messages {
 		target = (target == null ? player : target);
 		
 		String message = (messages.containsKey(this) ? messages.get(this) : this.value);
-		message.replaceAll("%PLAYER_NAME%", target.getName());
-		message.replaceAll("%PLAYER_DISPLAY_NAME%", target.getDisplayName());
-		message.replaceAll("%PLAYER_CUSTOM_NAME%", target.getCustomName());
+		message = message.replaceAll("%PLAYER_NAME%", target.getName());
+		message = message.replaceAll("%PLAYER_DISPLAY_NAME%", target.getDisplayName());
+		message = message.replaceAll("%PLAYER_CUSTOM_NAME%", target.getCustomName());
 		
 		if (ArenaManager.isPlayerInArena(player)) {
 			ArenaManager arena = ArenaManager.getPlayerArena(player);
-			message.replaceAll("%ARENA_NAME%", arena.getDisplayName());
-			message.replaceAll("%BLUE_SCORE%", arena.getBlueScore() + "");
-			message.replaceAll("%RED_SCORE%", arena.getRedScore() + "");
-			message.replaceAll("%PLAYERS_IN_ARENA%", arena.getRedScore() + "");
+			message = message.replaceAll("%ARENA_NAME%", arena.getDisplayName());
+			message = message.replaceAll("%BLUE_SCORE%", arena.getBlueScore() + "");
+			message = message.replaceAll("%RED_SCORE%", arena.getRedScore() + "");
+			message = message.replaceAll("%PLAYERS_IN_ARENA%", arena.getPlayers().size() + "");
+			message = message.replaceAll("%MAX_PLAYERS_IN_ARENA%", arena.getMaxPlayers() + "");
 		}
 		
 		player.sendMessage(HikaBrainPlugin.PREFIX + message);
@@ -54,6 +66,18 @@ public enum Messages {
 	
 	public String getMessage() {
 		return (messages.containsKey(this) ? messages.get(this) : this.value);
+	}
+	
+	public String getMessage(ArenaManager arena) {
+		String message = (messages.containsKey(this) ? messages.get(this) : this.value);
+		message = message.replaceAll("%ARENA_NAME%", arena.getDisplayName());
+		message = message.replaceAll("%BLUE_SCORE%", arena.getBlueScore() + "");
+		message = message.replaceAll("%RED_SCORE%", arena.getRedScore() + "");
+		message = message.replaceAll("%PLAYERS_IN_ARENA%", arena.getPlayers().size() + "");
+		message = message.replaceAll("%MAX_PLAYERS_IN_ARENA%", arena.getMaxPlayers() + "");
+		message = message.replaceAll("%ARENA_GAME_STATE%", arena.getGameState().getMessage() + "");
+		
+		return message;
 	}
 	
 	public static class FileManager {
@@ -78,7 +102,7 @@ public enum Messages {
 	    		{
 	    			messages.put(m, ChatColor.translateAlternateColorCodes('&', key));
 	    		} else {
-	    			config.set(key, m.value.replaceAll("�", "&"));
+	    			config.set(key, m.value.replaceAll("§", "&"));
 	    			messages.put(m, ChatColor.translateAlternateColorCodes('&', m.value));
 	    		}
 	    	}

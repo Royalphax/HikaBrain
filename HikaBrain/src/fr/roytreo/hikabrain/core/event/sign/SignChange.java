@@ -24,7 +24,7 @@ public class SignChange extends EventListener
         	{
         		if (ArenaManager.getArena(line1) != null)
             	{
-        			//ArenaManager.getArena(line1).addSign(event.getPlayer(), event.getBlock().getLocation());
+        			ArenaManager.getArena(line1).updateSigns(event.getBlock().getLocation());
             	} else {
             		event.setLine(0, ChatColor.DARK_RED + "⚠");
             		event.setLine(1, ChatColor.DARK_RED + "Arena \""+line1+"\"'");

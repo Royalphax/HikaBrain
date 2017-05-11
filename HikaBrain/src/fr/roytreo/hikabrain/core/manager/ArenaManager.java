@@ -10,6 +10,7 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -17,9 +18,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.roytreo.hikabrain.core.HikaBrainPlugin;
 import fr.roytreo.hikabrain.core.handler.Cuboid;
+import fr.roytreo.hikabrain.core.handler.GameState;
 import fr.roytreo.hikabrain.core.handler.Messages;
 import fr.roytreo.hikabrain.core.handler.Sounds;
 import fr.roytreo.hikabrain.core.util.Utils;
@@ -35,7 +38,7 @@ public class ArenaManager {
 	}
 	
 	public HashMap<Player, Team> players = new HashMap<>();
-	private ArrayList<Block> signs = new ArrayList<>();
+	private ArrayList<Location> signs = new ArrayList<>();
 	
 	private ArrayList<Location> redSpawns = new ArrayList<>();
 	private ArrayList<Location> blueSpawns = new ArrayList<>();
@@ -46,6 +49,7 @@ public class ArenaManager {
 	private int redScore = 0;
 	private int blueScore = 0;
 	private int maxPlayers = 2;
+	private GameState state;
 	
 	private Location lobby;
 	
@@ -85,6 +89,14 @@ public class ArenaManager {
 		this.fileManager = new FileManager(fileToLoad);
 		
 		arenas.add(this);
+	}
+	
+	public Cuboid getCuboid() {
+		return this.cubo;
+	}
+	
+	public GameState getGameState() {
+		return this.state;
 	}
 	
 	public String getDisplayName() {
@@ -141,6 +153,7 @@ public class ArenaManager {
 		broadcastMessage(Messages.PLAYER_JOIN_GAME, player);
 		
 		this.players.put(player, Team.NONE);
+		updateSigns(null);
 		return true;
 	}
 	
@@ -149,6 +162,7 @@ public class ArenaManager {
 		this.players.remove(player);
 		
 		broadcastMessage(Messages.PLAYER_QUIT_GAME, player);
+		updateSigns(null);
 		return true;
 	}
 	
@@ -165,6 +179,11 @@ public class ArenaManager {
 		}
 	}
 	
+	public void broadcastMessage(Messages message, Player target) {
+		for (Player players : players.keySet())
+			message.sendMessage(players, target);
+	}
+	
 	public boolean alreadyExistArena() {
 		for (ArenaManager arena : arenas)
 			if (arena.rawName.equals(this.rawName))
@@ -172,9 +191,35 @@ public class ArenaManager {
 		return false;
 	}
 	
-	public void broadcastMessage(Messages message, Player target) {
-		for (Player players : players.keySet())
-			message.sendMessage(players, target);
+	public void updateSigns(Location newSign) {
+		int delay = 0;
+		if (newSign != null) {
+			this.signs.add(newSign);
+			delay = 15;
+		}
+		final ArenaManager arena = this;
+		new BukkitRunnable() {
+			public void run() {
+				ArrayList<Location> signsCopy = new ArrayList<>(signs);
+				for (Location location : signs)
+				{
+					Block signBlock = location.getWorld().getBlockAt(location);
+					if (signBlock.getType() == Material.SIGN_POST || signBlock.getType() == Material.WALL_SIGN || signBlock.getType() == Material.SIGN)
+					{
+						Sign sign = (Sign) signBlock.getState();
+						sign.setLine(0, Messages.SIGN_HEADER.getMessage(arena));
+						sign.setLine(1, Messages.SIGN_LINE_2.getMessage(arena));
+						sign.setLine(2, (state == GameState.WAITING ? Messages.SIGN_LINE_3_PLAYERS.getMessage(arena) : Messages.SIGN_LINE_3_SCORE.getMessage(arena)));
+						sign.setLine(3, Messages.SIGN_LINE_4.getMessage(arena));
+						sign.update();
+					} else {
+						signs.remove(location);
+						signBlock.setType(Material.AIR);
+					}
+				}
+				signs = signsCopy;
+			}
+		}.runTaskLater(this.plugin, delay);
 	}
 	
 	public void saveArena() {
@@ -208,7 +253,7 @@ public class ArenaManager {
 				displayName = this.config.getString("name");
 				rawName = Normalizer.normalize(displayName, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "").replaceAll("[+.^:,%$@*§]","").replaceAll("/", "").replaceAll("\\\\", "").trim().replaceAll(" ", "_").toLowerCase();
 				lobby = Utils.toLocation(this.config.getString("lobby"));
-				cubo = new Cuboid(Utils.toLocation(this.config.getString("pos1")), Utils.toLocation(this.config.getString("pos2")));
+				cubo = new Cuboid(Utils.toLocation(this.config.getString("cuboid.pos1")), Utils.toLocation(this.config.getString("cuboid.pos2")));
 				
 			} catch (Exception ex) {
 				this.file.delete();
@@ -221,10 +266,10 @@ public class ArenaManager {
 			int i;
 			this.config.set("name", displayName);
 			this.config.set("lobby", Utils.toString(lobby));
-			this.config.set("pos1", Utils.toString(new Location(cubo.getWorld(), cubo.getXmax(), cubo.getYmax(), cubo.getZmax())));
-			this.config.set("pos2", Utils.toString(new Location(cubo.getWorld(), cubo.getXmin(), cubo.getYmin(), cubo.getZmin())));
+			this.config.set("cuboid.pos1", Utils.toString(new Location(cubo.getWorld(), cubo.getXmax(), cubo.getYmax(), cubo.getZmax())));
+			this.config.set("cuboid.pos2", Utils.toString(new Location(cubo.getWorld(), cubo.getXmin(), cubo.getYmin(), cubo.getZmin())));
 			for (i = 0; i < signs.size(); i++)
-				this.config.set("signs." + i, Utils.toString(signs.get(i).getLocation()));
+				this.config.set("signs." + i, Utils.toString(signs.get(i)));
 			for (i = 0; i < redSpawns.size(); i++)
 				this.config.set("red-spawns." + i, Utils.toString(redSpawns.get(i)));
 			for (i = 0; i < blueSpawns.size(); i++)
