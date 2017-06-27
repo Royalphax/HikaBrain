@@ -21,7 +21,9 @@ public class HikaBrainPlugin extends JavaPlugin {
 
 	/**
 	 * TODO:
-	 * - Système panneau cliquable
+	 * - Système panneau cliquable (fait plus ou moins)
+	 * - faire que lorsque un joueur va sur la laine adverse, point pour l'equipe.
+	 * - faire que le spawn est automatiquement 4 bloques au dessus de la laine ?
 	 * - Faire BeginCountdown & Game tasks
 	 * - Faire systeme de setup de la map
 	 * - Faire differentes game states
