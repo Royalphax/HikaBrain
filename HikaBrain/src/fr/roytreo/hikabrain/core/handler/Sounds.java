@@ -1,6 +1,9 @@
 package fr.roytreo.hikabrain.core.handler;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
 public enum Sounds {
     AMBIENCE_CAVE("AMBIENCE_CAVE", "AMBIENT_CAVE"),
@@ -209,12 +212,23 @@ public enum Sounds {
     }
 
     public Sound bukkitSound() {
-        if (resolvedSound != null) return resolvedSound;
-
+        if (resolvedSound != null) 
+        	return resolvedSound;
         try {
-            return resolvedSound = Sound.valueOf(post19sound);
+            return (resolvedSound = Sound.valueOf(post19sound));
         } catch (IllegalArgumentException e) {
-            return resolvedSound = Sound.valueOf(pre19sound);
+            return (resolvedSound = Sound.valueOf(pre19sound));
         }
     }
+    
+    public static void playSoundAll(Location location, Sounds sound, float volume, float pitch)
+	{
+		for (Player online : Bukkit.getOnlinePlayers())
+			online.playSound((location == null ? online.getLocation() : location), sound.bukkitSound(), volume, pitch);
+	}
+	
+	public static void playSound(Player player, Location location, Sounds sound, float volume, float pitch)
+	{
+		player.playSound((location == null ? player.getLocation() : location), sound.bukkitSound(), volume, pitch);
+	}
 }
