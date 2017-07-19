@@ -15,6 +15,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
 public class AnvilGUI extends AAnvilGUI {
 	public AnvilGUI(Player player, HikaBrainPlugin plugin, AnvilClickEventHandler handler, String itemName, String... itemLore) {
 		super(player, plugin, handler, itemName, itemLore);
+		
 	}
 
 	private class AnvilContainer extends ContainerAnvil {
@@ -26,6 +27,7 @@ public class AnvilGUI extends AAnvilGUI {
 		public boolean a(EntityHuman entityhuman) {
 			return true;
 		}
+		
 	}
 
 	@Override
