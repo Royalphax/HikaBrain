@@ -149,6 +149,20 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 		}
 	}
 
+	public boolean hasBlockInsideWalls(Block block) {
+
+		int xmax = this.xmax - 1;
+		int xmin = this.xmin + 1;
+		int ymax = this.ymax;
+		int ymin = this.ymin;
+		int zmax = this.zmax - 1;
+		int zmin = this.zmin + 1;
+
+		Cuboid cubo = new Cuboid(xmax, xmin, ymax, ymin, zmax, zmin, this.w);
+
+		return (hasBlockInside(block) && !cubo.hasBlockInside(block));
+	}
+
 	/**
 	 * @author Roytreo28
 	 * @return The 4 walls of the cuboid.
