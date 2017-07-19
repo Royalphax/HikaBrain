@@ -2,7 +2,7 @@ package fr.roytreo.hikabrain.core.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.EnumMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,10 +10,37 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import fr.roytreo.hikabrain.core.HikaBrainPlugin;
-import fr.roytreo.hikabrain.core.manager.ArenaManager;
-import fr.roytreo.hikabrain.core.util.Utils;
+import fr.roytreo.hikabrain.core.arena.Arena;
 
 public enum Messages {
+	
+	GAME_PREFIX(ChatColor.GRAY + "[" + ChatColor.GOLD + "HikaBrain" + ChatColor.GRAY + "]"),
+	
+	INVENTORY_ORDERING_ITEM_NAME("§nOrdering by ..."),
+	INVENTORY_ORDERING_ITEM_INSTRUCTIONS("§eLeft-Click: switch order\n§eRight-Click: increasing/descending"),
+	INVENTORY_CLOSE_ITEM_NAME("§cClose"),
+	INVENTORY_ARENA_ITEM_NAME("&f&l&n%ARENA_NAME%"),
+	INVENTORY_ARENA_ITEM_LORE_WAITING("\n&7Players: &e&l%PLAYERS_IN_ARENA%§f / §e§l%MAX_PLAYERS_IN_ARENA%\n&aWaiting for players...\n\n§d§n» Click to join"),
+	INVENTORY_ARENA_ITEM_LORE_STARTING("\n&7Players: &e&l%PLAYERS_IN_ARENA%§f / §e§l%MAX_PLAYERS_IN_ARENA%\n&2Starting...\n\n&e• &e6Starting ..."),
+	INVENTORY_ARENA_ITEM_LORE_INGAME("\n&7Players: &e&l%PLAYERS_IN_ARENA%§f / §e§l%MAX_PLAYERS_IN_ARENA%\n&7Score: &9&l%BLUE_SCORE% &f&l- &c&l%RED_SCORE%\n\n&c✖ &4Ingame ..."),
+	INVENTORY_ARENA_ITEM_LORE_ENDING("\n&7Players: &e&l%PLAYERS_IN_ARENA%§f / §e§l%MAX_PLAYERS_IN_ARENA%\n&7Score: &9&l%BLUE_SCORE% &f&l- &c&l%RED_SCORE%\n\n&e☠ &6Ending ..."),
+
+	INVENTORY_NEXT_PAGE("Next slide"),
+	INVENTORY_PREVIOUS_PAGE("Previous slide"),
+	
+	ORDERING_BY_DEFAULT("Default"),
+	ORDERING_BY_NAME("Name"),
+	ORDERING_BY_GAME_STATE("Game State"),
+	ORDERING_BY_PLAYERS("Players"),
+	
+	TEAM_RED_NAME("Red Team"),
+	TEAM_BLUE_NAME("Blue Team"),
+	TEAM_RED_WON("&eTeam §c§lRed won &f- &aCongratulations"),
+	TEAM_BLUE_WON("&eTeam §9§lBlue won &f- &aCongratulations"),
+	TEAM_RED_SCORED("&c&l%PLAYER_NAME% &escored!"),
+	TEAM_BLUE_SCORED("&9&l%PLAYER_NAME% &escored!"),
+	
+	PLAYER_CANT_BREAK_ARENA_WALLS("&cYou can't break arena's wall blocks !"),
 
 	PLAYER_JOIN_GAME("&a%PLAYER_NAME% &7join the game ! &e(%PLAYERS_IN_ARENA%/%ARENA_MAX_PLAYERS%)"),
 	PLAYER_QUIT_GAME("&a%PLAYER_NAME% &7left the game ! &e(%PLAYERS_IN_ARENA%/%ARENA_MAX_PLAYERS%)"),
@@ -37,7 +64,7 @@ public enum Messages {
 	ENDING("&5☠ &d&lEnding ..."),
 	LEAVE_GAME("&cYou left the game !");
 	
-	private static HashMap<Messages, String> messages = new HashMap<>();
+	private static EnumMap<Messages, String> messages = new EnumMap<>(Messages.class);
 	
 	private String value;
 	private Messages(String value) {
@@ -52,13 +79,13 @@ public enum Messages {
 		message = message.replaceAll("%PLAYER_DISPLAY_NAME%", target.getDisplayName());
 		message = message.replaceAll("%PLAYER_CUSTOM_NAME%", target.getCustomName());
 		
-		if (ArenaManager.isPlayerInArena(player)) {
-			ArenaManager arena = ArenaManager.getPlayerArena(player);
+		if (Arena.isPlayerInArena(player)) {
+			Arena arena = Arena.getPlayerArena(player);
 			message = message.replaceAll("%ARENA_NAME%", arena.getDisplayName());
-			message = message.replaceAll("%BLUE_SCORE%", arena.getBlueScore() + "");
-			message = message.replaceAll("%RED_SCORE%", arena.getRedScore() + "");
-			message = message.replaceAll("%PLAYERS_IN_ARENA%", arena.getPlayers().size() + "");
-			message = message.replaceAll("%MAX_PLAYERS_IN_ARENA%", arena.getMaxPlayers() + "");
+			message = message.replaceAll("%BLUE_SCORE%", Integer.toString(arena.getBlueScore()));
+			message = message.replaceAll("%RED_SCORE%", Integer.toString(arena.getRedScore()));
+			message = message.replaceAll("%PLAYERS_IN_ARENA%", Integer.toString(arena.getPlayers().size()));
+			message = message.replaceAll("%MAX_PLAYERS_IN_ARENA%", Integer.toString(arena.getMaxPlayers()));
 		}
 		
 		player.sendMessage(HikaBrainPlugin.PREFIX + message);
@@ -68,13 +95,13 @@ public enum Messages {
 		return (messages.containsKey(this) ? messages.get(this) : this.value);
 	}
 	
-	public String getMessage(ArenaManager arena) {
+	public String getMessage(Arena arena) {
 		String message = (messages.containsKey(this) ? messages.get(this) : this.value);
 		message = message.replaceAll("%ARENA_NAME%", arena.getDisplayName());
-		message = message.replaceAll("%BLUE_SCORE%", arena.getBlueScore() + "");
-		message = message.replaceAll("%RED_SCORE%", arena.getRedScore() + "");
-		message = message.replaceAll("%PLAYERS_IN_ARENA%", arena.getPlayers().size() + "");
-		message = message.replaceAll("%MAX_PLAYERS_IN_ARENA%", arena.getMaxPlayers() + "");
+		message = message.replaceAll("%BLUE_SCORE%", Integer.toString(arena.getBlueScore()));
+		message = message.replaceAll("%RED_SCORE%", Integer.toString(arena.getRedScore()));
+		message = message.replaceAll("%PLAYERS_IN_ARENA%", Integer.toString(arena.getPlayers().size()));
+		message = message.replaceAll("%MAX_PLAYERS_IN_ARENA%", Integer.toString(arena.getMaxPlayers()));
 		message = message.replaceAll("%ARENA_GAME_STATE%", arena.getGameState().getMessage() + "");
 		
 		return message;
@@ -89,7 +116,7 @@ public enum Messages {
 				try {
 					file.createNewFile();
 				} catch (IOException e) {
-					Utils.registerException(e, true);
+					new Exception(e).register(HikaBrainPlugin.getInstance(), true);
 				}
 			}
 			
@@ -109,8 +136,11 @@ public enum Messages {
 	    	try {
 				config.save(file);
 			} catch (IOException e) {
-				Utils.registerException(e, true);
+				new Exception(e).register(HikaBrainPlugin.getInstance(), true);
 			}
+	    	
+	    	String game_prefix = config.getString(GAME_PREFIX.toString().toLowerCase().replace('_', '-'));
+	    	HikaBrainPlugin.updatePrefix(ChatColor.translateAlternateColorCodes('&', game_prefix));
 		}
 	}
 }
