@@ -6,8 +6,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.SignChangeEvent;
 
 import fr.roytreo.hikabrain.core.HikaBrainPlugin;
+import fr.roytreo.hikabrain.core.arena.Arena;
 import fr.roytreo.hikabrain.core.event.EventListener;
-import fr.roytreo.hikabrain.core.manager.ArenaManager;
 
 public class SignChange extends EventListener
 {
@@ -22,9 +22,9 @@ public class SignChange extends EventListener
         	String line1 = event.getLine(1);
         	if (event.getPlayer().hasPermission("hikabrain.signs.create"))
         	{
-        		if (ArenaManager.getArena(line1) != null)
+        		if (Arena.getArena(line1) != null)
             	{
-        			ArenaManager.getArena(line1).updateSigns(event.getBlock().getLocation());
+        			Arena.getArena(line1).updateSigns(event.getBlock());
             	} else {
             		event.setLine(0, ChatColor.DARK_RED + "⚠");
             		event.setLine(1, ChatColor.DARK_RED + "Arena \""+line1+"\"'");

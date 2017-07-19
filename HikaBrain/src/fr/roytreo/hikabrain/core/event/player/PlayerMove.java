@@ -1,13 +1,16 @@
 package fr.roytreo.hikabrain.core.event.player;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import fr.roytreo.hikabrain.core.HikaBrainPlugin;
+import fr.roytreo.hikabrain.core.arena.Arena;
 import fr.roytreo.hikabrain.core.event.EventListener;
-import fr.roytreo.hikabrain.core.manager.ArenaManager;
+import fr.roytreo.hikabrain.core.handler.Team;
 
 public class PlayerMove extends EventListener {
 
@@ -18,8 +21,8 @@ public class PlayerMove extends EventListener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerMove(final org.bukkit.event.player.PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		if (ArenaManager.isPlayerInArena(player)) {
-			ArenaManager arena = ArenaManager.getPlayerArena(player);
+		if (Arena.isPlayerInArena(player)) {
+			Arena arena = Arena.getPlayerArena(player);
 			if (arena.getCuboid().hasPlayerInside(player))
 				return;
 			Location playerLoc = player.getLocation();
@@ -32,6 +35,15 @@ public class PlayerMove extends EventListener {
 				player.setVelocity(player.getVelocity().zero());
 			} else if (y < arena.getCuboid().getYmin()) {
 				arena.respawn(player);
+			}
+			if (player.getLocation().subtract(0, 1, 0).getBlock().getType() == Material.WOOL) {
+				Block block = player.getLocation().subtract(0, 1, 0).getBlock();
+				if ((block.getData() == (byte) 14) && arena.getTeam(player) == Team.BLUE) {
+					arena.updateScore(Team.BLUE, player);
+				}
+				if ((block.getData() == (byte) 11) && arena.getTeam(player) == Team.RED) {
+					arena.updateScore(Team.RED, player);
+				}
 			}
 		}
 	}

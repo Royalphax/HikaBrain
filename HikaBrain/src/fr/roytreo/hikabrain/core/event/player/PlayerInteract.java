@@ -1,6 +1,5 @@
 package fr.roytreo.hikabrain.core.event.player;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -9,10 +8,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 
 import fr.roytreo.hikabrain.core.HikaBrainPlugin;
+import fr.roytreo.hikabrain.core.arena.Arena;
+import fr.roytreo.hikabrain.core.arena.event.PlayerClickArenaSignEvent;
 import fr.roytreo.hikabrain.core.event.EventListener;
 import fr.roytreo.hikabrain.core.handler.Messages;
-import fr.roytreo.hikabrain.core.manager.ArenaManager;
-import fr.roytreo.hikabrain.core.manager.ArenaManager.Team;
+import fr.roytreo.hikabrain.core.handler.Team;
 
 public class PlayerInteract extends EventListener {
 
@@ -23,8 +23,8 @@ public class PlayerInteract extends EventListener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerInteract(final org.bukkit.event.player.PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		if (ArenaManager.isPlayerInArena(player)) {
-			ArenaManager arena = ArenaManager.getPlayerArena(player);
+		if (Arena.isPlayerInArena(player)) {
+			Arena arena = Arena.getPlayerArena(player);
 			if (event.getAction().toString().contains("RIGHT") && event.hasItem() && event.getItem() != null && event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName()) {
 				if (event.getItem().getItemMeta().getDisplayName().equals(Messages.TEAM_BLUE_ITEM_NAME.getMessage())) {
 					if (arena.getTeam(player) != Team.BLUE) {
@@ -56,26 +56,10 @@ public class PlayerInteract extends EventListener {
 				}
 			}
 		}
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
-        {
-        	if ((event.getClickedBlock().getType() == Material.SIGN || event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.WALL_SIGN))
-        	{
-            	Sign sign = (Sign) event.getClickedBlock().getState();
-        		if (sign.getLine(0).equals(Messages.SIGN_HEADER.getMessage()))
-        		{
-        			ArenaManager arena = ArenaManager.getArena(ChatColor.stripColor(sign.getLine(1)));
-        			if (arena != null)
-        			{
-        				if (!ArenaManager.isPlayerInArena(player)) {
-        					player.chat("/hb join " + ChatColor.stripColor(sign.getLine(1)));
-        				} else {
-        					Messages.ALREADY_IN_GAME.sendMessage(player, player);
-        				}
-        			} else {
-        				Messages.SIGN_NOT_LINK_TO_ARENA.sendMessage(player, player);
-        			}
-        		}
-        	}
-        }
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && (event.getClickedBlock().getType() == Material.SIGN || event.getClickedBlock().getType() == Material.SIGN_POST || event.getClickedBlock().getType() == Material.WALL_SIGN)) {
+			Sign sign = (Sign) event.getClickedBlock().getState();
+			PlayerClickArenaSignEvent event2 = new PlayerClickArenaSignEvent(sign, player);
+			this.plugin.getServer().getPluginManager().callEvent(event2);
+		}
 	}
 }

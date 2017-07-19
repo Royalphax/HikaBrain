@@ -8,19 +8,18 @@ import fr.roytreo.hikabrain.core.HikaBrainPlugin;
 import fr.roytreo.hikabrain.core.arena.Arena;
 import fr.roytreo.hikabrain.core.event.EventListener;
 
-public class PlayerDeath extends EventListener {
+public class PlayerQuit extends EventListener {
 
-	public PlayerDeath(final HikaBrainPlugin plugin) {
+	public PlayerQuit(final HikaBrainPlugin plugin) {
 		super(plugin);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
-	public void onPlayerDeath(final org.bukkit.event.entity.PlayerDeathEvent event) {
-		Player player = event.getEntity();
+	public void onPlayerQuit(final org.bukkit.event.player.PlayerQuitEvent event) {
+		Player player = event.getPlayer();
 		if (Arena.isPlayerInArena(player)) {
 			Arena arena = Arena.getPlayerArena(player);
-			event.setDeathMessage(null);
-			arena.respawn(player);
+			arena.quit(player);
 		}
 	}
 }
