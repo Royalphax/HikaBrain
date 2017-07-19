@@ -105,7 +105,10 @@ public enum Particles {
 	}
 
 	public int getId() {
-		return (version.newerThan(this.supportedVersion) ? this.id : (this.alternative == null ? TOWN_AURA.getId() : this.alternative.getId()));
+		if (version.newerThan(this.supportedVersion))
+			return this.id;
+		else 
+			return this.alternative == null ? TOWN_AURA.getId() : this.alternative.getId();
 	}
 
 	public int getOptions() {
