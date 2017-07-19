@@ -27,11 +27,9 @@ public class ArenaPlayerRespawn extends EventListener {
 		PlayerInventory inv = player.getInventory();
 		inv.all(new ItemStack(Material.RED_SANDSTONE, 64));
 		player.setFallDistance(0.0f);
-		if (arena.getTeam(player) == Team.BLUE) {
-			player.teleport(arena.getBlueSpawns().get(arena.getPlayerIndex(player)));
-		}
-		if (arena.getTeam(player) == Team.RED) {
-			player.teleport(arena.getRedSpawns().get(arena.getPlayerIndex(player)));
-		}
+		if (arena.getTeam(player) == Team.BLUE)
+			player.teleport(arena.getBlueSpawn(arena.getPlayerIndex(player)));
+		if (arena.getTeam(player) == Team.RED)
+			player.teleport(arena.getRedSpawn(arena.getPlayerIndex(player)));
 	}
 }

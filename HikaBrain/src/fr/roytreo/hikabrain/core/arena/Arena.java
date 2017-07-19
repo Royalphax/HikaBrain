@@ -110,12 +110,18 @@ public class Arena extends Game {
 		return this.displayName;
 	}
 	
-	public ArrayList<Location> getRedSpawns() {
-		return this.redSpawns;
+	public Location getRedSpawn(int index) {
+		int size = this.redSpawns.size();
+		while (index >= size)
+			index = index - size;
+		return this.redSpawns.get(index);
 	}
 	
-	public ArrayList<Location> getBlueSpawns() {
-		return this.blueSpawns;
+	public Location getBlueSpawn(int index) {
+		int size = this.blueSpawns.size();
+		while (index >= size)
+			index = index - size;
+		return this.blueSpawns.get(index);
 	}
 	
 	public Set<Player> getPlayers() {
@@ -341,16 +347,17 @@ public class Arena extends Game {
 	
 	public void setTeam(Player player, Team team) {
 		Team oldTeam = Team.NONE;
-		if (players.containsKey(player)) {
+		if (players.containsKey(player))
 			oldTeam = players.get(player);
-			players.remove(player);
-		}
 		
 		PlayerSwitchTeamEvent event = new PlayerSwitchTeamEvent(player, team, oldTeam, this);
 		plugin.getServer().getPluginManager().callEvent(event);
 		
-		if (!event.isCancelled())
+		if (!event.isCancelled()) {
+			if (oldTeam != Team.NONE)
+				players.remove(player);
 			players.put(player, team);
+		}
 	}
 	
 	public Team getTeam(Player player) {
@@ -375,9 +382,10 @@ public class Arena extends Game {
 	
 	public int getPlayerIndex(Player player) {
 		int output = 0;
+		Team team = getTeam(player);
 		for (Player pla : players.keySet()) {
 			if (!pla.getName().equals(player.getName())) {
-				if (players.get(pla) == getTeam(player))
+				if (players.get(pla) == team)
 					output++;
 				continue;
 			}
