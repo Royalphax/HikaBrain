@@ -1,4 +1,4 @@
-package fr.roytreo.hikabrain.core.event.gui;
+package fr.roytreo.hikabrain.core.gui.event;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
