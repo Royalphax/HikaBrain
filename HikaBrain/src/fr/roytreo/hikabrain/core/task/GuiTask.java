@@ -4,8 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.roytreo.hikabrain.core.HikaBrainPlugin;
-import fr.roytreo.hikabrain.core.event.gui.GuiUpdateEvent;
 import fr.roytreo.hikabrain.core.gui.base.GuiScreen;
+import fr.roytreo.hikabrain.core.gui.event.GuiUpdateEvent;
 
 public class GuiTask extends BukkitRunnable {
 
