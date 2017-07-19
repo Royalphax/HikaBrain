@@ -1,13 +1,6 @@
 package fr.roytreo.hikabrain.core.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.text.Normalizer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,81 +9,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.roytreo.hikabrain.core.HikaBrainPlugin;
-import fr.roytreo.hikabrain.core.handler.Sounds;
-
 public class Utils {
-	
-	public static void playSoundAll(Location location, Sounds sound, float volume, float pitch)
-	{
-		for (Player online : Bukkit.getOnlinePlayers())
-			online.playSound((location == null ? online.getLocation() : location), sound.bukkitSound(), volume, pitch);
-	}
-	
-	public static void playSound(Player player, Location location, Sounds sound, float volume, float pitch)
-	{
-		player.playSound((location == null ? player.getLocation() : location), sound.bukkitSound(), volume, pitch);
-	}
-
-	public static void registerException(Exception ex, Boolean cast)
-	{
-		HikaBrainPlugin instance = HikaBrainPlugin.getInstance();
-		if (cast)
-			instance.getLogger().warning("An error occured: " + ex.getMessage() + " || Contact the developer if you don't understand what happened");
-		BufferedWriter writer = null;
-        try {
-            String timeLog = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(Calendar.getInstance().getTime());
-            File folder = new File(instance.getDataFolder(), "reports/");
-            if (!folder.exists()) folder.mkdirs();
-            File logFile = new File(instance.getDataFolder(), "reports/" + timeLog + ".txt");
-
-            StringWriter errors = new StringWriter();
-            ex.printStackTrace(new PrintWriter(errors));
-            
-            try {
-            	writer = new BufferedWriter(new FileWriter(logFile, true));
-				writer.write(errors.toString());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-        } finally {
-            try {
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-        }
-	}
-	
-	public static void registerException(Throwable th, Boolean cast)
-	{
-		HikaBrainPlugin instance = HikaBrainPlugin.getInstance();
-		if (cast)
-			instance.getLogger().warning("An error occured: " + th.getMessage() + " || Contact the developer if you don't understand what happened");
-		BufferedWriter writer = null;
-        try {
-            String timeLog = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(Calendar.getInstance().getTime());
-            File folder = new File(instance.getDataFolder(), "reports/");
-            if (!folder.exists()) folder.mkdirs();
-            File logFile = new File(instance.getDataFolder(), "reports/" + timeLog + ".txt");
-
-            StringWriter errors = new StringWriter();
-            th.printStackTrace(new PrintWriter(errors));
-            
-            try {
-            	writer = new BufferedWriter(new FileWriter(logFile, true));
-				writer.write(errors.toString());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-        } finally {
-            try {
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-        }
-	}
 	
 	public static Location toLocation(final String string) {
         final String[] splitted = string.split("_");
@@ -116,5 +35,17 @@ public class Utils {
     			return true;
     	}
     	return false;
+    }
+    
+    public static String getRaw(String input) {
+    	String output = Normalizer.normalize(input, Normalizer.Form.NFD);
+    	output = output.replaceAll("[^\\p{ASCII}]", "");
+    	output = output.replaceAll("[+.^:,%$@*§]","");
+    	output = output.replaceAll("/", "");
+    	output = output.replaceAll("\\\\", "");
+    	output = output.trim();
+    	output = output.replaceAll(" ", "_");
+    	output = output.toLowerCase();
+    	return output;
     }
 }

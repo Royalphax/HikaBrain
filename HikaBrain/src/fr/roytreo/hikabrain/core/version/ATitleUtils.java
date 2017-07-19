@@ -3,7 +3,8 @@ package fr.roytreo.hikabrain.core.version;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import fr.roytreo.hikabrain.core.util.Utils;
+import fr.roytreo.hikabrain.core.HikaBrainPlugin;
+import fr.roytreo.hikabrain.core.handler.Exception;
 
 public abstract class ATitleUtils {
 
@@ -27,9 +28,8 @@ public abstract class ATitleUtils {
 				titlePacket(player, 10, 40, 10, (String) obj[0], (String) obj[1]);
 				break;
 			}
-		} catch (Exception e) {
-			Utils.registerException(e, false);
-			return;
+		} catch (java.lang.Exception e) {
+			new Exception(e).register(HikaBrainPlugin.getInstance(), false);
 		}
 	}
 
