@@ -1,10 +1,10 @@
 package fr.roytreo.hikabrain.core.exception;
 
-public class InvalidGoalException extends Exception {
+public class InvalidWinningScoreException extends Exception {
 	
 	private static final long serialVersionUID = 5777320626918190447L;
 
-	public InvalidGoalException(String message) {
+	public InvalidWinningScoreException(String message) {
 		super(message);
 	}
 }
