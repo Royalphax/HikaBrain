@@ -14,9 +14,13 @@ import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.material.Dye;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Wool;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -183,17 +187,32 @@ public class ItemBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("deprecation")
 	public ItemBuilder setDyeColor(DyeColor color) {
-		this.is.setDurability(color.getDyeData());
+		MaterialData blockData = is.getData();
+		if (!(blockData instanceof Dye))
+		    return this;
+		Dye dyeData = (Dye) blockData;
+		dyeData.setColor(color);
+		is.setData(dyeData);
 		return this;
 	}
 
-	@Deprecated
 	public ItemBuilder setWoolColor(DyeColor color) {
-		if (!is.getType().equals(Material.WOOL))
-			return this;
-		this.is.setDurability(color.getDyeData());
+		MaterialData blockData = is.getData();
+		if (!(blockData instanceof Wool))
+		    return this;
+		Wool woolData = (Wool) blockData;
+		woolData.setColor(color);
+		is.setData(woolData);
+		return this;
+	}
+	
+	public ItemBuilder setBannerColor(DyeColor color) {
+		if (is.getType() != Material.BANNER)
+		    return this;
+		BannerMeta bannerMeta = (BannerMeta) is.getItemMeta();
+		bannerMeta.setBaseColor(color);
+		is.setItemMeta(bannerMeta);
 		return this;
 	}
 
