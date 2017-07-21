@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -22,16 +21,16 @@ import fr.roytreo.hikabrain.core.util.ItemBuilder;
 import net.md_5.bungee.api.ChatColor;
 
 public class GuiArenaList extends GuiScreen {
-	public Player player;
-	public GuiAction action;
-	public String teamName;
-	public int page;
+	public final Player player;
+	public final GuiAction action;
+	public final int page;
 	public OrderingType order;
+	public final ArrayList<Arena> arenas;
 	public boolean crescent;
-	public ArrayList<Arena> arenas;
+	public String teamName;
 
 	public GuiArenaList(HikaBrainPlugin plugin, Player player, GuiAction action) {
-		super(plugin, ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "» "+ ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "Arenas", 4, player, false);
+		super(plugin, ChatColor.DARK_GRAY + "Arena GUI", 4, player, false);
 		this.player = player;
 		this.action = action;
 		this.page = 1;
@@ -41,8 +40,8 @@ public class GuiArenaList extends GuiScreen {
 
 	@Override
 	public void drawScreen() {
-		
-		setItemLine(new ItemBuilder(Material.STAINED_GLASS_PANE, 1).setName(ChatColor.DARK_GRAY + "✖").setDyeColor(DyeColor.GRAY).toItemStack(), 4);
+
+		setItemLine(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, (byte) 7).setName(ChatColor.DARK_GRAY + "✖").toItemStack(), 4);
 		setItem(new ItemBuilder(Material.HOPPER, 1).setName(Messages.INVENTORY_ORDERING_ITEM_NAME.getMessage()).setLore(getHopperLore()).toItemStack(), 4, 1);
 		setItem(new ItemBuilder(Material.BARRIER, 1).setName(Messages.INVENTORY_CLOSE_ITEM_NAME.getMessage()).toItemStack(), 4, 9);
 	
@@ -67,15 +66,21 @@ public class GuiArenaList extends GuiScreen {
 				setItem(new ItemBuilder(Material.HOPPER, 1).setName(Messages.INVENTORY_ORDERING_ITEM_NAME.getMessage()).setLore(getHopperLore()).toItemStack(), 4, 1);
 			} else if (itemMeta.getDisplayName().equals(Messages.INVENTORY_CLOSE_ITEM_NAME.getMessage())) {
 				clearInventory();
-				player.closeInventory();
+				clicker.closeInventory();
 			} else if (item.getType() == Material.STAINED_CLAY) {
 				Arena arena = arenas.get(event.getSlot());
 				switch (action) {
 					case DELETE :
+						arena.delete(clicker, false);
 						break;
-					case DISPLAY :
+					case JOIN :
+						arena.join(clicker);
 						break;
 					case TELEPORT :
+						clicker.teleport(arena.getLobby());
+						break;
+					case EDIT :
+						arena.editArena(true, clicker);
 						break;
 				}
 			}
@@ -118,11 +123,11 @@ public class GuiArenaList extends GuiScreen {
 			}
 		}
 		if (slot < 27)
-			setItem(new ItemBuilder(Material.STAINED_GLASS_PANE, 1).setName(ChatColor.DARK_GRAY + "✖").setDyeColor(DyeColor.GRAY).toItemStack(), 32);
+			setItem(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, (byte) 7).setName(ChatColor.DARK_GRAY + "✖").toItemStack(), 32);
 		if (page > 1) {
 			setItem(new ItemBuilder(Material.ARROW, 1).setName(Messages.INVENTORY_PREVIOUS_PAGE.getMessage()).toItemStack(), 30);
 		} else {
-			setItem(new ItemBuilder(Material.STAINED_GLASS_PANE, 1).setName(ChatColor.DARK_GRAY + "✖").setDyeColor(DyeColor.GRAY).toItemStack(), 30);
+			setItem(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, (byte) 7).setName(ChatColor.DARK_GRAY + "✖").toItemStack(), 30);
 		}
 	}
 	
@@ -166,8 +171,9 @@ public class GuiArenaList extends GuiScreen {
 	}
 	
 	public enum GuiAction {
-		DISPLAY(),
+		JOIN(),
 		TELEPORT(),
+		EDIT(),
 		DELETE();
 	}
 }

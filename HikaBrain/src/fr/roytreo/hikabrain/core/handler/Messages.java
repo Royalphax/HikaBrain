@@ -74,7 +74,7 @@ public enum Messages {
 	public void sendMessage(Player player, Player target) {
 		target = (target == null ? player : target);
 		
-		String message = (messages.containsKey(this) ? messages.get(this) : this.value);
+		String message = getMessage();
 		message = message.replaceAll("%PLAYER_NAME%", target.getName());
 		message = message.replaceAll("%PLAYER_DISPLAY_NAME%", target.getDisplayName());
 		message = message.replaceAll("%PLAYER_CUSTOM_NAME%", target.getCustomName());
@@ -96,13 +96,13 @@ public enum Messages {
 	}
 	
 	public String getMessage(Arena arena) {
-		String message = (messages.containsKey(this) ? messages.get(this) : this.value);
+		String message = getMessage();
 		message = message.replaceAll("%ARENA_NAME%", arena.getDisplayName());
 		message = message.replaceAll("%BLUE_SCORE%", Integer.toString(arena.getBlueScore()));
 		message = message.replaceAll("%RED_SCORE%", Integer.toString(arena.getRedScore()));
 		message = message.replaceAll("%PLAYERS_IN_ARENA%", Integer.toString(arena.getPlayers().size()));
 		message = message.replaceAll("%MAX_PLAYERS_IN_ARENA%", Integer.toString(arena.getMaxPlayers()));
-		message = message.replaceAll("%ARENA_GAME_STATE%", arena.getGameState().getMessage() + "");
+		message = message.replaceAll("%ARENA_GAME_STATE%", arena.getGameState().getMessage().getMessage());
 		
 		return message;
 	}
