@@ -3,18 +3,15 @@ package fr.roytreo.hikabrain.core.version;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import fr.roytreo.hikabrain.core.HikaBrainPlugin;
-import fr.roytreo.hikabrain.core.handler.Exception;
+public interface ATitleUtils {
 
-public abstract class ATitleUtils {
+	public void titlePacket(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle);
 
-	public abstract void titlePacket(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle);
-
-	public abstract void tabPacket(Player player, String footer, String header);
+	public void tabPacket(Player player, String footer, String header);
 	
-	public abstract void actionBarPacket(Player player, String message);
+	public void actionBarPacket(Player player, String message);
 	
-	public void defaultTitle(Type type, Player player, Object... obj) {
+	public default void defaultTitle(Type type, Player player, Object... obj) {
 		try {
 			switch (type)
 			{
@@ -29,16 +26,16 @@ public abstract class ATitleUtils {
 				break;
 			}
 		} catch (java.lang.Exception e) {
-			new Exception(e).register(HikaBrainPlugin.getInstance(), false);
+			// Do nothing
 		}
 	}
 
-	public void broadcastDefaultTitle(Type type, Object... obj) {
+	public default void broadcastDefaultTitle(Type type, Object... obj) {
 		for (Player online : Bukkit.getOnlinePlayers())
 			defaultTitle(type, online, obj);
 	}
 	
-	public static enum Type {
+	public enum Type {
 		TITLE(0),
 		TAB(1),
 		ACTION(2);

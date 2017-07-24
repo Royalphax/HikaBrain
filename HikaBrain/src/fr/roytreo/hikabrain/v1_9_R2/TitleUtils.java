@@ -12,7 +12,7 @@ import net.minecraft.server.v1_9_R2.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.server.v1_9_R2.PacketPlayOutTitle;
 import net.minecraft.server.v1_9_R2.PlayerConnection;
 
-public class TitleUtils extends ATitleUtils {
+public class TitleUtils implements ATitleUtils {
 
 	@Override
 	public void titlePacket(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title,

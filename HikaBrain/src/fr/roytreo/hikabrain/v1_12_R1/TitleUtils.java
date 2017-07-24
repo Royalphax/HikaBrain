@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import fr.roytreo.hikabrain.core.version.ATitleUtils;
 
-public class TitleUtils extends ATitleUtils {
+public class TitleUtils implements ATitleUtils {
 
 	/**
 	 * @author ConnorLinfoot
