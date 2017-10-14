@@ -24,11 +24,11 @@ public class UpdateScoreEvent extends Event {
 		this.newBlueScore = arena.getBlueScore() + (winner == Team.BLUE ? 1 : 0);
 	}
 
-	public int newRedScore() {
+	public int getNewRedScore() {
 		return this.newRedScore;
 	}
 	
-	public int newBlueScore() {
+	public int getNewBlueScore() {
 		return this.newBlueScore;
 	}
 	
@@ -46,6 +46,10 @@ public class UpdateScoreEvent extends Event {
 
 	@Override
 	public HandlerList getHandlers() {
+		return handlers;
+	}
+	
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }
